@@ -1,7 +1,9 @@
 package com.example.fit_gods_springboot.service;
 
 import com.example.fit_gods_springboot.model.Routine;
+import com.example.fit_gods_springboot.model.User;
 import com.example.fit_gods_springboot.repository.RoutineRepository;
+import com.example.fit_gods_springboot.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,14 +15,23 @@ public class RoutineService {
 
     // Inyección de dependencias del repositorio de rutinas
     private final RoutineRepository routineRepository;
+    private final UserRepository userRepository;
 
     // Constructor para inyectar la dependencia
-    public RoutineService(RoutineRepository routineRepository) {
+    public RoutineService(RoutineRepository routineRepository, UserRepository userRepository) {
         this.routineRepository = routineRepository;
+        this.userRepository = userRepository;
     }
 
     // Método para guardar una nueva rutina en la base de datos
     public Routine save(Routine routine) {
+        if (routine.getUser() != null && routine.getUser().getId() != null) {
+            User userFromDb = userRepository.findById(routine.getUser().getId())
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + routine.getUser().getId()));
+
+            // Asignamos la entidad User completa con todos sus campos cargados
+            routine.setUser(userFromDb);
+        }
         return routineRepository.save(routine);
     }
 

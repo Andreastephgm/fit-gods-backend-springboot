@@ -1,5 +1,6 @@
 package com.example.fit_gods_springboot.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +16,7 @@ import lombok.Setter;
 // Anotaciones de JPA / Base de datos
 @Entity
 @Table(name = "routineExercises")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class RoutineExercise {
 
     @Id
@@ -30,8 +32,9 @@ public class RoutineExercise {
     private Integer repetitions;
     private Integer rest;
 
-    // Relación ManyToOne: Muchas ejecuciones de ejercicio pertenecen a una Rutina
-    @ManyToOne(fetch = FetchType.LAZY)
+    // Relación ManyToOne con Cascade para evitar TransientPropertyValueException
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "idRoutine", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Routine routine;
 }

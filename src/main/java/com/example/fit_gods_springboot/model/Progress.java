@@ -1,5 +1,6 @@
 package com.example.fit_gods_springboot.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,28 +8,28 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-
 //Anotaciones de lombok
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-//anotaciones bd
 @Entity
 @Table(name = "progress")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Progress {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idProgress")
-//Atributos
     private Long idProgress;
 
     private LocalDate date;
     private Double weight;
     private String notes;
-//Relación: Un usuario puede tener muchos registros de progreso pero un progreso solo tiene un usuario.
-    @ManyToOne(fetch = FetchType.LAZY)
+
+    // Se especifica la relacion many to one
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "idUser", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User user;
 }
